@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Trash2, Pencil } from "lucide-react";
 
 function NoteCard({ note, onEdit, onDelete }) {
@@ -24,22 +24,27 @@ function NoteCard({ note, onEdit, onDelete }) {
     }
   };
 
-  const handleDelete = async () => {
-    if (!confirmDelete) {
-      setConfirmDelete(true);
-      setTimeout(() => setConfirmDelete(false), 3000);
-      return;
-    }
+  const handleDeleteClick = () => {
+    setConfirmDelete(true);
+  };
+
+  const confirmDeletion = async () => {
     try {
       setDeleting(true);
       setError("");
       await onDelete(note.id);
+      setDeleting(false);
+      setConfirmDelete(false);
     } catch (error) {
       console.error("Error deleting note:", error);
       setError("Failed to delete note. Please try again.");
       setDeleting(false);
       setConfirmDelete(false);
     }
+  };
+
+  const cancelDeletion = () => {
+    setConfirmDelete(false);
   };
 
   const handleEdit = () => {
@@ -51,6 +56,18 @@ function NoteCard({ note, onEdit, onDelete }) {
   if (!note) {
     return <div>No note data available</div>;
   }
+
+  const contentItems = useMemo(() => {
+    const raw = (note.content || "").trim();
+    if (!raw) return [];
+    // Split by newlines and filter out empty lines
+    // Remove any leading numbering patterns (e.g., "1. ", "2. ", etc.)
+    return raw
+      .split(/\r?\n/)
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .map((s) => s.replace(/^\d+\.\s*/, "")); // Remove leading number pattern like "1. "
+  }, [note.content]);
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow duration-200">
@@ -70,11 +87,11 @@ function NoteCard({ note, onEdit, onDelete }) {
             <button
               className={`text-sm flex items-center justify-center p-1 rounded-full transition-colors ${
                 confirmDelete
-                  ? "bg-red-400 text-red-600"
+                  ? "text-red-600 bg-red-50"
                   : "text-gray-400 hover:text-red-500 hover:bg-red-50"
               }`}
               disabled={deleting}
-              onClick={handleDelete}
+              onClick={handleDeleteClick}
               title="Delete note"
             >
               <Trash2 className="h-4 w-4" />
@@ -82,10 +99,44 @@ function NoteCard({ note, onEdit, onDelete }) {
           </div>
         </div>
         <div className="mb-2">
-          {note.content || <span className="text-gray-400">No content</span>}
+          {contentItems.length > 0 ? (
+            <ol className="list-decimal pl-6 space-y-1.5 text-gray-700">
+              {contentItems.map((item, idx) => (
+                <li key={idx} className="leading-relaxed">
+                  {item}
+                </li>
+              ))}
+            </ol>
+          ) : (
+            <span className="text-gray-400">No content</span>
+          )}
         </div>
+        {confirmDelete && (
+          <div className="mt-3 border border-red-200 bg-red-50 text-red-800 rounded-md p-3">
+            <div className="text-sm mb-2">
+              Are you sure you want to delete "{note.title || "this note"}"?
+              This action cannot be undone.
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={confirmDeletion}
+                disabled={deleting}
+                className="px-3 py-1.5 rounded-md bg-red-600 text-white text-sm hover:bg-red-700 disabled:opacity-50"
+              >
+                {deleting ? "Deleting..." : "Yes, delete"}
+              </button>
+              <button
+                onClick={cancelDeletion}
+                disabled={deleting}
+                className="px-3 py-1.5 rounded-md border text-sm text-gray-700 hover:bg-gray-50"
+              >
+                No, keep it
+              </button>
+            </div>
+          </div>
+        )}
         <div className="text-sm text-gray-500">{formDate(note.createdAt)}</div>
-        {error && <div className="mt-2 text-sm text-red-600">{error}</div>}
+        {/* Inline error hidden to avoid duplicate notifications; errors are shown globally */}
       </div>
     </div>
   );

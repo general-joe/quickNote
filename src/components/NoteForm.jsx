@@ -16,6 +16,7 @@ function NoteForm({ noteToEdit, onNoteUpdated, onCancel }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
   const { currentUser } = useAuth();
 
   useEffect(() => {
@@ -50,6 +51,7 @@ function NoteForm({ noteToEdit, onNoteUpdated, onCancel }) {
           updatedAt: serverTimestamp(),
         });
         setSuccess(true);
+        setSuccessMessage("Note updated successfully!");
         if (onNoteUpdated) {
           onNoteUpdated();
         }
@@ -64,10 +66,12 @@ function NoteForm({ noteToEdit, onNoteUpdated, onCancel }) {
         setTitle("");
         setContent("");
         setSuccess(true);
+        setSuccessMessage("Note created successfully!");
       }
 
       setTimeout(() => {
         setSuccess(false);
+        setSuccessMessage("");
         if (!noteToEdit && onNoteUpdated) {
           onNoteUpdated();
         }
@@ -107,11 +111,7 @@ function NoteForm({ noteToEdit, onNoteUpdated, onCancel }) {
           {error}
         </div>
       )}
-      {success && (
-        <div className="bg-green-50 text-green-700 p-2 rounded-md mb-4 text-sm">
-          Note {noteToEdit ? "updated" : "created"} successfully!
-        </div>
-      )}
+      {/* success banner removed to avoid duplicate notifications; updates handled in Dashboard */}
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label
