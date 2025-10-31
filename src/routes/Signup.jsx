@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Notebook } from "lucide-react";
+import { Notebook, Eye, EyeOff } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
@@ -7,6 +7,8 @@ const Signup = () => {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
   const [passwordConfirm, setPasswordConfirm] = useState();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
   const [loading, setLoading] = useState();
   const [error, setError] = useState();
 
@@ -80,15 +82,30 @@ const Signup = () => {
             >
               Password
             </label>
-            <input
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="***************"
-              required
-            />
+            <div className="relative">
+              <input
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 pr-10"
+                type={showPassword ? "text" : "password"}
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="***************"
+                required
+              />
+              <button
+                type="button"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                onClick={() => setShowPassword((v) => !v)}
+                className="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 hover:text-gray-700 focus:outline-none"
+                tabIndex={-1}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-5 w-5" />
+                ) : (
+                  <Eye className="h-5 w-5" />
+                )}
+              </button>
+            </div>
           </div>
 
           <div className="mt-4">
@@ -98,15 +115,30 @@ const Signup = () => {
             >
               Confirm Password
             </label>
-            <input
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              type="password"
-              id="password-confirm"
-              value={passwordConfirm}
-              onChange={(e) => setPasswordConfirm(e.target.value)}
-              placeholder="***************"
-              required
-            />
+            <div className="relative">
+              <input
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 pr-10"
+                type={showPasswordConfirm ? "text" : "password"}
+                id="password-confirm"
+                value={passwordConfirm}
+                onChange={(e) => setPasswordConfirm(e.target.value)}
+                placeholder="***************"
+                required
+              />
+              <button
+                type="button"
+                aria-label={showPasswordConfirm ? "Hide confirm password" : "Show confirm password"}
+                onClick={() => setShowPasswordConfirm((v) => !v)}
+                className="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 hover:text-gray-700 focus:outline-none"
+                tabIndex={-1}
+              >
+                {showPasswordConfirm ? (
+                  <EyeOff className="h-5 w-5" />
+                ) : (
+                  <Eye className="h-5 w-5" />
+                )}
+              </button>
+            </div>
           </div>
           <button
             className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition-colors focus:outline-none focus:right-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed mt-4"
