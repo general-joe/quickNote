@@ -61,9 +61,19 @@ function Dashboard() {
     setSelectedNote(null);
   };
 
-  const handleNoteUpdated = () => {
+  const handleNoteUpdated = (action) => {
     setSelectedNote(null);
-    setNotification({ type: "success", message: "note updated successfully" });
+    if (action === "create") {
+      setNotification({
+        type: "success",
+        message: "Note created successfully!",
+      });
+    } else {
+      setNotification({
+        type: "success",
+        message: "Note updated successfully!",
+      });
+    }
     setTimeout(() => setNotification(null), 3000);
   };
 

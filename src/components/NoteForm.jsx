@@ -53,7 +53,7 @@ function NoteForm({ noteToEdit, onNoteUpdated, onCancel }) {
         setSuccess(true);
         setSuccessMessage("Note updated successfully!");
         if (onNoteUpdated) {
-          onNoteUpdated();
+          onNoteUpdated("update"); // 👈 Pass the update action
         }
       } else {
         // Create new note
@@ -67,6 +67,10 @@ function NoteForm({ noteToEdit, onNoteUpdated, onCancel }) {
         setContent("");
         setSuccess(true);
         setSuccessMessage("Note created successfully!");
+        if (onNoteUpdated) {
+          onNoteUpdated("create"); // 👈 Pass the create action
+        }
+        if (onCancel) onCancel();
       }
 
       setTimeout(() => {
